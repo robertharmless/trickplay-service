@@ -20,7 +20,7 @@ app = Flask(__name__)
 api = Api(app)
 # TODO: Fix duplicate api references.
 
-# SystemInfo
+
 class SystemInfoEndpoint(Resource):
     """
     Manage System Information Requests
@@ -48,7 +48,6 @@ class SystemInfoEndpoint(Resource):
         return response
 
 
-# TrickPlay
 class TrickPlayEndpoint(Resource):
     """
     Manage Trick Play Requests
@@ -98,13 +97,13 @@ api.add_resource(TrickPlayEndpoint, "/api/trickPlay")
 @app.errorhandler(404)
 def resource_not_found(e):
 
-    message = {"success": False, "message": "Resource not found."}
+    message = {"success": False, "message": f"{e}"}
     response = make_response(
         jsonify(message),
         404,
     )
     response.headers["Content-Type"] = "application/json"
-    
+
     return response
 
 
