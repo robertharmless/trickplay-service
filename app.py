@@ -5,30 +5,103 @@ Simple app to create Trick Play - Mode from/for HLS m3u8.
 
 
 # Special
-from flask import Flask
+from flask import Flask, jsonify, make_response
+from flask_restful import reqparse, abort, Api, Resource
 
 # App
 from api.event import post_event
 from api.log_listener import setup_log_event_handlers
+from lib.system import SystemInfoResponse
+from lib.trick_play import TrickPlay
 
 setup_log_event_handlers()
 
 app = Flask(__name__)
+api = Api(app)
 
 
-@app.route("/")
-def hello_world():
-    return "<p>Hello, World!</p>"
+# SystemInfo
+class SystemInfoEndpoint(Resource):
+    def get(self):
 
-#TODO: Add catching errors
-#TODO: Convert to restful focus
-#TODO: Proper validation could be helpful. Parsing paramters?
+        func = f"{__name__}.{__class__.__name__}.get"
+        post_event("log_debug", f"{func}", f"Managing request to retrieve System Information.")
 
-#TODO: Point to trick play-mode
+        # Do the work
+        info = SystemInfoResponse()
+        info.success = True
 
-#TODO: Able to work with multiple storage methods. Though ffmpeg may require being local.
+        response = make_response(
+            jsonify(info.__dict__),
+            200,
+        )
+        response.headers["Content-Type"] = "application/json"
 
-#TODO: Mesasure progress for insights?
-#TODO: Add Postman Collection
-#TODO: Add Open API documentation
+        post_event("log_debug", f"{func}", f"Returning requested System Information.")
 
+        return response
+
+
+# TrickPlay
+class TrickPlayEndpoint(Resource):
+    
+    
+    def post(self):
+
+        func = f"{__name__}.{__class__.__name__}.post"
+        post_event("log_debug", f"{func}", f"Managing request to create trick play assets for manifest.")
+
+        # Do the work
+        parser = reqparse.RequestParser()
+        parser.add_argument('master', type=str, help='HLS master.m3u8 manifest location.', required=True)
+        args = parser.parse_args()
+
+        post_event("log_debug", f"{func}", f"Parsed args:{args}")
+
+        trickplay = TrickPlay(master=args.master)
+        trickplay.generate_trickplay_assets()
+        trickplay.success = True
+
+        response = make_response(
+            jsonify(trickplay.__dict__),
+            200,
+        )
+        response.headers["Content-Type"] = "application/json"
+
+        post_event("log_debug", f"{func}", f"Returning results to create trick play assets.")
+
+        return response
+
+
+## API Routes
+api.add_resource(SystemInfoEndpoint, "/api/systemInfo")
+api.add_resource(TrickPlayEndpoint, "/api/trickPlay")
+
+
+## Error handling
+@app.errorhandler(404)
+def resource_not_found(e):
+    message = {"success": False, "message": "Resource not found."}
+    return message
+
+
+## Setting up the app
+if __name__ == "__main__":
+    app.run()
+
+
+# Incoming image path types
+# /Folder/Path/master.m3u8
+# https://server.cc/Folder/Path/master.m3u8
+
+# TODO: Add catching errors
+# TODO: Convert to restful focus
+# TODO: Proper validation could be helpful. Parsing paramters?
+
+# TODO: Point to trick play-mode
+
+# TODO: Able to work with multiple storage methods. Though ffmpeg may require being local.
+
+# TODO: Mesasure progress for insights?
+# TODO: Add Postman Collection
+# TODO: Add Open API documentation
