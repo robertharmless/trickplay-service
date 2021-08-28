@@ -18,14 +18,20 @@ setup_log_event_handlers()
 
 app = Flask(__name__)
 api = Api(app)
-
+# TODO: Fix duplicate api references.
 
 # SystemInfo
 class SystemInfoEndpoint(Resource):
+    """
+    Manage System Information Requests
+    """
+
     def get(self):
 
         func = f"{__name__}.{__class__.__name__}.get"
-        post_event("log_debug", f"{func}", f"Managing request to retrieve System Information.")
+        post_event(
+            "log_debug", f"{func}", f"Managing request to retrieve System Information."
+        )
 
         # Do the work
         info = SystemInfoResponse()
@@ -44,16 +50,24 @@ class SystemInfoEndpoint(Resource):
 
 # TrickPlay
 class TrickPlayEndpoint(Resource):
-    
-    
+    """
+    Manage Trick Play Requests
+    """
+
     def post(self):
 
         func = f"{__name__}.{__class__.__name__}.post"
-        post_event("log_debug", f"{func}", f"Managing request to create trick play assets for manifest.")
+        post_event(
+            "log_debug",
+            f"{func}",
+            f"Managing request to create trick play assets for manifest.",
+        )
 
         # Do the work
         parser = reqparse.RequestParser()
-        parser.add_argument('master', type=str, help='HLS master.m3u8 manifest location.', required=True)
+        parser.add_argument(
+            "master", type=str, help="HLS master.m3u8 manifest location.", required=True
+        )
         args = parser.parse_args()
 
         post_event("log_debug", f"{func}", f"Parsed args:{args}")
@@ -68,7 +82,9 @@ class TrickPlayEndpoint(Resource):
         )
         response.headers["Content-Type"] = "application/json"
 
-        post_event("log_debug", f"{func}", f"Returning results to create trick play assets.")
+        post_event(
+            "log_debug", f"{func}", f"Returning results to create trick play assets."
+        )
 
         return response
 
@@ -90,17 +106,6 @@ if __name__ == "__main__":
     app.run()
 
 
-# Incoming image path types
-# /Folder/Path/master.m3u8
-# https://server.cc/Folder/Path/master.m3u8
-
-# TODO: Add catching errors
-# TODO: Convert to restful focus
-# TODO: Proper validation could be helpful. Parsing paramters?
-
-# TODO: Point to trick play-mode
-
-# TODO: Able to work with multiple storage methods. Though ffmpeg may require being local.
 
 # TODO: Mesasure progress for insights?
 # TODO: Add Postman Collection
