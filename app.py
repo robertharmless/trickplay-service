@@ -97,14 +97,20 @@ api.add_resource(TrickPlayEndpoint, "/api/trickPlay")
 ## Error handling
 @app.errorhandler(404)
 def resource_not_found(e):
+
     message = {"success": False, "message": "Resource not found."}
-    return message
+    response = make_response(
+        jsonify(message),
+        404,
+    )
+    response.headers["Content-Type"] = "application/json"
+    
+    return response
 
 
 ## Setting up the app
 if __name__ == "__main__":
     app.run()
-
 
 
 # TODO: Mesasure progress for insights?
