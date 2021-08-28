@@ -18,21 +18,9 @@ class App:
     hostname = None
     appname = "trick play service"
 
-    # teams related variables
-    video_alert_url = None
-
-    # folders
-    capture_folder_name = None
-    destination_folder_name = None
-
     def __init__(self):
 
         self.hostname = socket.gethostname()
-
-        self.video_alert_url = environ["VIDEO_ALERT_URL"]
-
-        self.capture_folder_name = environ["CAPTURE_FOLDER_NAME"]
-        self.destination_folder_name = environ["DESTINATION_FOLDER_NAME"]
 
 
 class Logs(object):
