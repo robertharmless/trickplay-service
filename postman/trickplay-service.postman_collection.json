@@ -1,0 +1,57 @@
+{
+	"info": {
+		"_postman_id": "3f885865-8ea0-4dca-b8d6-8a531975d990",
+		"name": "trickplay-service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get System Information",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/systemInfo",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"systemInfo"
+					]
+				},
+				"description": "Get host system information."
+			},
+			"response": []
+		},
+		{
+			"name": "Create Trickplay",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"master\": \"https://multiplatform-f.akamaihd.net/i/multi/will/bunny/big_buck_bunny_,640x360_400,640x360_700,640x360_1000,950x540_1500,.f4v.csmil/master.m3u8\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/api/trickPlay/hls",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"trickPlay",
+						"hls"
+					]
+				},
+				"description": "Submit an m3u8 path to generate the trickplay entries."
+			},
+			"response": []
+		}
+	]
+}
