@@ -1,11 +1,17 @@
 """
 Create trick play for hls - based on Roku requirements.
+'''''''
+Based on specs defined by Roku for HLS streams.
+https://developer.roku.com/docs/developer-program/media-playback/trick-mode/hls-and-dash.md
+- See "HLS considerations"
+Also:
+https://github.com/rokudev/samples/tree/master/media/TrickPlayThumbnailsHLS
+
 """
-# TODO: Add reference to the Roku requirements.
-# TODO: Add reference to apple hls trick play definitions.
 # Built-in
 from urllib.parse import urlparse
 import pathlib
+
 from dataclasses import dataclass, field
 from typing import List
 
@@ -27,7 +33,6 @@ class TrickPlayResult:
     """
 
     data: str = None
-    errors: List[str] = field(default_factory=list)
     message: str = "Unknown Error."
     success: bool = False
 
@@ -98,7 +103,14 @@ class TrickPlay:
             if self.master_manifest_type == "filepath":
                 message = "Successfuly added the image playlist to the master.m3u8"
             else:
-                message = f"Add this string to the master.m3u8 and upload the assets in the folder {self.trickplay_path}"
+                web_url = self.master_manifest_path
+                if self.master_manifest_path.endswith(".m3u8"):
+                    replace_string = self.master_manifest_path.split("/")[-1]
+                    web_url = self.master_manifest_path.replace(replace_string, "")
+
+                message = f"Add this string to the master.m3u8 and upload the assets to the web url {web_url}"
+
+                trick_play_result.data = self.master_manifest_trickplay_string
 
             trick_play_result.message = message
 
@@ -231,7 +243,7 @@ class TrickPlay:
         index_list.append("#EXT-X-MEDIA-SEQUENCE:1")
         index_list.append("#EXT-X-PLAYLIST-TYPE:VOD")
         index_list.append("#EXT-X-IMAGES-ONLY")
-        index_list.append("\n")
+        index_list.append("\n\n")
 
         max_image_size = 0
         # Add Images
@@ -251,6 +263,7 @@ class TrickPlay:
         self.thumb_bandwidth = int(max_image_size + (max_image_size * 0.05))
 
         # Build footer
+        index_list.append("\n\n")
         index_list.append("#EXT-X-ENDLIST")
 
         # Create the playlists in the local folder.
