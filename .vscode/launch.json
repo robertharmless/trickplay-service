@@ -5,10 +5,17 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Module",
+            "name": "Module: lib.ffmpeg",
             "type": "python",
             "request": "launch",
             "module": "lib.ffmpeg",
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "Module: lib.trickplay",
+            "type": "python",
+            "request": "launch",
+            "module": "lib.trick_play",
             "cwd": "${workspaceFolder}"
         },
         {
