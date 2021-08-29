@@ -6,6 +6,7 @@ from os import environ
 import subprocess
 from dataclasses import dataclass, field
 from typing import List
+import pathlib
 
 # Special
 
@@ -29,8 +30,9 @@ class FFMPEG:
     version = "0"
 
     def __init__(self) -> None:
+        self.name = pathlib.Path(__file__).name.replace(".py", "")
 
-        func = f"{__name__}.{__class__.__name__}.__init__"
+        func = f"{__package__}.{self.name}.{__class__.__name__}.__init__"
 
         FFMPEG_PATH_key = "FFMPEG_PATH"
         if FFMPEG_PATH_key in environ:
@@ -48,7 +50,7 @@ class FFMPEG:
         Find if ffmpeg exists.
         """
         success = False
-        func = f"{__name__}.{__class__.__name__}.verify_ffmpeg_path"
+        func = f"{__package__}.{self.name}.{__class__.__name__}.verify_ffmpeg_path"
 
         arguments = ["-version"]
         post_event("log_debug", f"{func}", f"Checking ffmpeg exists.")
@@ -71,7 +73,7 @@ class FFMPEG:
         """
         result = RunResult()
 
-        func = f"{__name__}.{__class__.__name__}.run"
+        func = f"{__package__}.{self.name}.{__class__.__name__}.run"
 
         cmd = arguments
         cmd.insert(0, self.ffmpeg_binary)
