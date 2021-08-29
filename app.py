@@ -3,7 +3,6 @@ Simple app to create Trick Play - Mode from/for HLS m3u8.
 """
 # Built-in
 
-
 # Special
 from flask import Flask, jsonify, make_response
 from flask_restful import reqparse, abort, Api, Resource
@@ -18,7 +17,6 @@ setup_log_event_handlers()
 
 app = Flask(__name__)
 api = Api(app)
-# TODO: Fix duplicate api references.
 
 
 class SystemInfoEndpoint(Resource):
@@ -89,7 +87,7 @@ class TrickPlayEndpoint(Resource):
 
 ## API Routes
 api.add_resource(SystemInfoEndpoint, "/api/systemInfo")
-api.add_resource(TrickPlayEndpoint, "/api/trickPlay")
+api.add_resource(TrickPlayEndpoint, "/api/trickPlay/hls")
 
 
 ## Error handling
@@ -109,8 +107,3 @@ def resource_not_found(e):
 ## Setting up the app
 if __name__ == "__main__":
     app.run()
-
-
-# TODO: Mesasure progress for insights?
-# TODO: Add Postman Collection
-# TODO: Add Open API documentation
