@@ -26,6 +26,16 @@ class RunResult:
 
 
 class FFMPEG:
+    """
+    Manage FFMPEG Related Processes
+
+    Methods
+    ----------
+    verify_ffmpeg_path -> Verify if the FFMPEG binary exists.
+    run -> Run an FFMPEG Command.
+
+    """
+
     ffmpeg_binary = "/usr/local/ffmpeg"
     version = "0"
 
@@ -47,7 +57,16 @@ class FFMPEG:
 
     def verify_ffmpeg_path(self) -> bool:
         """
-        Find if ffmpeg exists.
+        Verify if the FFMPEG binary exists
+
+        Parameters
+        ----------
+        none
+
+        Returns
+        -------
+        bool
+            true = binary was found
         """
         success = False
         func = f"{__package__}.{self.name}.{__class__.__name__}.verify_ffmpeg_path"
@@ -67,9 +86,21 @@ class FFMPEG:
 
         return success
 
-    def run(self, arguments: list):
+    def run(self, arguments: list) -> RunResult:
         """
         Run an ffmpeg command
+
+        Parameters
+        ----------
+        arguments
+            list of arguments
+
+        Returns
+        -------
+        RunResult object:
+            data: str of data
+            errors: List of errors if any
+            success: True = process was successful
         """
         result = RunResult()
 
