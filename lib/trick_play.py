@@ -9,6 +9,7 @@ https://github.com/rokudev/samples/tree/master/media/TrickPlayThumbnailsHLS
 
 """
 # Built-in
+from os import environ
 from urllib.parse import urlparse
 import pathlib
 
@@ -19,6 +20,7 @@ from typing import List
 import m3u8
 
 # App
+from .utilities import get_source_type
 from .ffmpeg import FFMPEG
 from api.event import post_event
 from .config import App
@@ -47,13 +49,13 @@ class TrickPlay:
     # master manifest data
     master_content = None
     source_index = None
-    # trickplay
-    trickplay_index = None
-    trickplay_path = None
-    trickplay_foldername = "images-1"
-    default_trickplay_path = None
-    trickplay_index_name = "index.m3u8"
-    master_manifest_trickplay_string = None
+    # trick play
+    trick_play_index = None
+    trick_play_path = None
+    trick_play_foldername = "images-1"
+    default_trick_play_path = None
+    trick_play_index_name = "index.m3u8"
+    master_manifest_trick_play_string = None
     # thumbnails
     thumb_interval = 6
     thumb_extension = ".jpg"
@@ -65,15 +67,23 @@ class TrickPlay:
         self.master_manifest_path = master
         self.master_manifest_type = get_source_type(master)
         self.name = pathlib.Path(__file__).name.replace(".py", "")
-        self.default_trickplay_path = pathlib.Path(__file__).parent
 
-    def generate_trickplay_assets(self) -> bool:
+        print(f"environ [{type(environ)}]:{environ}")
+
+        if "DEFAULT_RESULT_FOLDER_NAME" in environ:
+            self.default_trick_play_path = pathlib.Path.joinpath(
+                pathlib.Path(__file__).parent.parent,
+                environ["DEFAULT_RESULT_FOLDER_NAME"],
+            )
+        else:
+            self.default_trick_play_path = pathlib.Path(__file__).parent.parent
+
+    def generate_trick_play_assets(self) -> bool:
         """
         Function to generate the trick play assets.
         """
-        success = False
         func = (
-            f"{__package__}.{self.name}.{__class__.__name__}.generate_trickplay_assets"
+            f"{__package__}.{self.name}.{__class__.__name__}.generate_trick_play_assets"
         )
         post_event(
             "log_debug",
@@ -110,7 +120,7 @@ class TrickPlay:
 
                 message = f"Add this string to the master.m3u8 and upload the assets to the web url {web_url}"
 
-                trick_play_result.data = self.master_manifest_trickplay_string
+                trick_play_result.data = self.master_manifest_trick_play_string
 
             trick_play_result.message = message
 
@@ -168,22 +178,22 @@ class TrickPlay:
         # expected types -> filepath or url
         if self.master_manifest_type == "filepath":
             # Get master.m3u8 folder
-            self.trickplay_path = pathlib.Path.joinpath(
-                pathlib.Path(self.master_manifest_path).parent,
-                self.trickplay_foldername,
+            self.trick_play_path = pathlib.Path.joinpath(
+                pathlib.Path(self.master_manifest_path),
+                self.trick_play_foldername,
             )
 
         else:
             # Use the default folder
-            self.trickplay_path = pathlib.Path.joinpath(
-                pathlib.Path(self.default_trickplay_path).parent,
-                self.trickplay_foldername,
+            self.trick_play_path = pathlib.Path.joinpath(
+                pathlib.Path(self.default_trick_play_path),
+                self.trick_play_foldername,
             )
 
         # Create image folder
-        pathlib.Path(self.trickplay_path).mkdir(parents=True, exist_ok=True)
+        pathlib.Path(self.trick_play_path).mkdir(parents=True, exist_ok=True)
 
-        if pathlib.Path(self.trickplay_path).exists():
+        if pathlib.Path(self.trick_play_path).exists():
             success = True
 
         return success
@@ -197,7 +207,7 @@ class TrickPlay:
         post_event("log_debug", f"{func}", f"Generating thumbnail images...")
 
         thumb_path = (
-            f"{self.trickplay_path}/{self.thumb_prefix}-%03d{self.thumb_extension}"
+            f"{self.trick_play_path}/{self.thumb_prefix}-%03d{self.thumb_extension}"
         )
 
         # ffmpeg -i $INFILE -vf fps=1/$INTERVAL -s $RESOLUTION $OUTPREFIX-%03d.jpg
@@ -231,7 +241,7 @@ class TrickPlay:
 
         image_files = [
             e.name
-            for e in pathlib.Path(self.trickplay_path).iterdir()
+            for e in pathlib.Path(self.trick_play_path).iterdir()
             if e.is_file() and e.name.endswith(self.thumb_extension)
         ]
 
@@ -249,7 +259,7 @@ class TrickPlay:
         # Add Images
         for image in sorted(image_files):
             size = (
-                pathlib.Path(pathlib.Path(self.trickplay_path).joinpath(image))
+                pathlib.Path(pathlib.Path(self.trick_play_path).joinpath(image))
                 .stat()
                 .st_size
             )
@@ -271,12 +281,12 @@ class TrickPlay:
         index = m3u8.loads(index_string)
 
         with open(
-            pathlib.Path(self.trickplay_path).joinpath(self.trickplay_index_name), "w"
+            pathlib.Path(self.trick_play_path).joinpath(self.trick_play_index_name), "w"
         ) as f:
             f.write(index.dumps())
 
         if pathlib.Path(
-            pathlib.Path(self.trickplay_path).joinpath(self.trickplay_index_name)
+            pathlib.Path(self.trick_play_path).joinpath(self.trick_play_index_name)
         ).exists():
             success = True
 
@@ -292,27 +302,16 @@ class TrickPlay:
             "log_debug", f"{func}", f"Adding the image playlist to the master.m3u8"
         )
 
-        self.master_manifest_trickplay_string = f'#EXT-X-IMAGE-STREAM-INF:BANDWIDTH={self.thumb_bandwidth},RESOLUTION={self.thumb_resolution},CODECS="jpeg",URI="{self.trickplay_foldername}/{self.trickplay_index_name}"'
+        self.master_manifest_trick_play_string = f'#EXT-X-IMAGE-STREAM-INF:BANDWIDTH={self.thumb_bandwidth},RESOLUTION={self.thumb_resolution},CODECS="jpeg",URI="{self.trick_play_foldername}/{self.trick_play_index_name}"'
 
         if self.master_manifest_type == "filepath":
             with open(self.master_manifest_path, "a") as f:
                 f.write("\n\n")
-                f.write(self.master_manifest_trickplay_string)
+                f.write(self.master_manifest_trick_play_string)
 
             success = True
 
         return success
-
-
-def get_source_type(source: str) -> str:
-    """
-    Determine if the source string is a web url or local file path.
-    """
-    parsed = urlparse(source)
-    if parsed.scheme in ["http", "https"]:
-        return "url"
-    else:
-        return "filepath"
 
 
 if __name__ == "__main__":
@@ -323,4 +322,4 @@ if __name__ == "__main__":
     master = "/samples/master.m3u8"
 
     trickplay = TrickPlay(master=master)
-    trickplay.generate_trickplay_assets()
+    trickplay.generate_trick_play_assets()
