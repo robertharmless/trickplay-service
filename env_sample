@@ -1,0 +1,3 @@
+LOGLEVEL=10
+FFMPEG_PATH="/opt/homebrew/bin/ffmpeg"
+DEFAULT_RESULT_FOLDER_NAME="generated"
