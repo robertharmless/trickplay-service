@@ -19,6 +19,7 @@ from typing import List
 import m3u8
 
 # App
+from .utilities import get_source_type
 from .ffmpeg import FFMPEG
 from api.event import post_event
 from .config import App
@@ -302,17 +303,6 @@ class TrickPlay:
             success = True
 
         return success
-
-
-def get_source_type(source: str) -> str:
-    """
-    Determine if the source string is a web url or local file path.
-    """
-    parsed = urlparse(source)
-    if parsed.scheme in ["http", "https"]:
-        return "url"
-    else:
-        return "filepath"
 
 
 if __name__ == "__main__":
