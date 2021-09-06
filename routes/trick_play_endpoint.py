@@ -59,10 +59,10 @@ class TrickPlayEndpoint(Resource):
         post_event("log_debug", f"{func}", f"Parsed args:{args}")
 
         trickplay = TrickPlay(master=args.master)
-        trick_play_result = trickplay.generate_trickplay_assets()
+        trickplay_result = trickplay.generate_trick_play_assets()
 
         response = make_response(
-            jsonify(trick_play_result.__dict__),
+            jsonify(trickplay_result.__dict__),
             200,
         )
         response.headers["Content-Type"] = "application/json"
