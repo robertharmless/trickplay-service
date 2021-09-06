@@ -18,9 +18,13 @@ This is a REST API Service to generate the trick play assets for an HLS master.m
 
 - Install FFMPEG.
 - Create an .env file.<br>
+    ```
     cat env_sample > .env
+    ```
 - Update the local .env file with the needed info.<br>
+    ```
     vi .env
+    ```
 - Run this flask based trick play service.
 - Can import the postman collection [from here.](postman)
 
