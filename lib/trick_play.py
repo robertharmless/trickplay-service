@@ -9,6 +9,7 @@ https://github.com/rokudev/samples/tree/master/media/TrickPlayThumbnailsHLS
 
 """
 # Built-in
+from os import environ
 from urllib.parse import urlparse
 import pathlib
 
@@ -66,13 +67,21 @@ class TrickPlay:
         self.master_manifest_path = master
         self.master_manifest_type = get_source_type(master)
         self.name = pathlib.Path(__file__).name.replace(".py", "")
-        self.default_trickplay_path = pathlib.Path(__file__).parent
+
+        print(f"environ [{type(environ)}]:{environ}")
+
+        if "DEFAULT_RESULT_FOLDER_NAME" in environ:
+            self.default_trickplay_path = pathlib.Path.joinpath(
+                pathlib.Path(__file__).parent.parent,
+                environ["DEFAULT_RESULT_FOLDER_NAME"],
+            )
+        else:
+            self.default_trickplay_path = pathlib.Path(__file__).parent.parent
 
     def generate_trickplay_assets(self) -> bool:
         """
         Function to generate the trick play assets.
         """
-        success = False
         func = (
             f"{__package__}.{self.name}.{__class__.__name__}.generate_trickplay_assets"
         )
@@ -170,14 +179,14 @@ class TrickPlay:
         if self.master_manifest_type == "filepath":
             # Get master.m3u8 folder
             self.trickplay_path = pathlib.Path.joinpath(
-                pathlib.Path(self.master_manifest_path).parent,
+                pathlib.Path(self.master_manifest_path),
                 self.trickplay_foldername,
             )
 
         else:
             # Use the default folder
             self.trickplay_path = pathlib.Path.joinpath(
-                pathlib.Path(self.default_trickplay_path).parent,
+                pathlib.Path(self.default_trickplay_path),
                 self.trickplay_foldername,
             )
 
