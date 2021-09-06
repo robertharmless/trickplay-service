@@ -8,7 +8,7 @@ from flask import jsonify, make_response
 from flask_restful import Resource
 
 # App
-from lib.system import SystemInfoResponse
+from lib.system import SystemInfo
 from api.event import post_event
 
 
@@ -46,7 +46,7 @@ class SystemInfoEndpoint(Resource):
         )
 
         # Do the work
-        info = SystemInfoResponse()
+        info = SystemInfo()
         info.success = True
 
         response = make_response(

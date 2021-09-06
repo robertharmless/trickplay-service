@@ -5,7 +5,7 @@ from datetime import datetime
 import socket
 
 
-class SystemInfoResponse:
+class SystemInfo:
     """
     System Info Response Model
     """
