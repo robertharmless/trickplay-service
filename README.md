@@ -35,3 +35,15 @@ This is a REST API Service to generate the trick play assets for an HLS master.m
 
 - Created for and tested on Mac OS.
 - Tested with Python 3.9.
+<br/><br/>
+
+### Reference:
+---
+The trick play module was developed based on specs defined by Roku for HLS streams.
+
+https://developer.roku.com/docs/developer-program/media-playback/trick-mode/hls-and-dash.md
+
+See "HLS considerations" section.
+
+Also notice their code samples:
+https://github.com/rokudev/samples/tree/master/media/TrickPlayThumbnailsHLS
