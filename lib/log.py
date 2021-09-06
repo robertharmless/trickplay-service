@@ -15,9 +15,11 @@ logs = Logs()
 logger = logging.getLogger(f"{logs.log_file_path}")
 logger.setLevel(logs.loglevel)
 
+# log file setting
 fh = logging.FileHandler(f"{logs.log_file_path}")
 fh.setLevel(logs.loglevel)
 
+# console setting
 ch = logging.StreamHandler()
 ch.setLevel(logs.loglevel)
 
